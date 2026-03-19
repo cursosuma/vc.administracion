@@ -1,0 +1,1839 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario: Validación de conocimientos | Administración</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #F4F6F8;
+            --bg-card: #FFFFFF;
+            --text-main: #202124;
+            --text-secondary: #5F6368;
+            --bg-option: #F1F3F4;
+            --bg-option-hover: #E8EAED;
+            --color-primary: #e86f1e;
+            /* Azul profesional */
+            --color-correct: #1E8E3E;
+            --bg-correct: #E6F4EA;
+            --color-incorrect: #D93025;
+            --bg-incorrect: #FCE8E6;
+            --border-color: #DADCE0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            position: relative;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Botón Regresar Animado */
+        .btn-back-anim {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px 0;
+            margin-bottom: 10px;
+        }
+
+        .btn-back-anim svg {
+            transition: transform 0.3s ease;
+        }
+
+        .btn-back-anim:hover {
+            color: var(--color-primary);
+        }
+
+        .btn-back-anim:hover svg {
+            transform: translateX(-5px);
+        }
+
+        /* Pantallas y Encabezados */
+        .modules-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .modules-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .btn-history-top {
+            position: absolute;
+            right: 0;
+            top: 0;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .module-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .module-btn:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(11, 87, 208, 0.1);
+        }
+
+        .module-btn h3 {
+            color: var(--color-primary);
+            font-size: 1.1rem;
+        }
+
+        .module-btn p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Pantalla Quiz */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .icon-btn {
+            background: var(--bg-option);
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--border-color);
+            color: var(--text-main);
+        }
+
+        .progress-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .progress-segments {
+            display: flex;
+            flex-grow: 1;
+            gap: 4px;
+        }
+
+        .segment {
+            height: 6px;
+            flex-grow: 1;
+            background-color: var(--bg-option);
+            border-radius: 3px;
+            transition: background-color 0.3s;
+        }
+
+        .segment.active {
+            background-color: var(--color-primary);
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .question-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .question-number {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-left: 35px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .option {
+            background-color: var(--bg-option);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .option:hover:not(.disabled) {
+            background-color: var(--bg-option-hover);
+        }
+
+        .option.disabled {
+            cursor: default;
+        }
+
+        .option-letter {
+            color: var(--text-secondary);
+            font-weight: 500;
+            width: 20px;
+        }
+
+        .option.correct-answer {
+            background-color: var(--bg-correct);
+            border-color: var(--color-correct);
+        }
+
+        .option.wrong-answer {
+            background-color: var(--bg-incorrect);
+            border-color: var(--color-incorrect);
+        }
+
+        .rationale {
+            margin-top: 25px;
+            margin-left: 35px;
+            padding: 20px;
+            background-color: #F8F9FA;
+            border-left: 4px solid var(--color-primary);
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            display: none;
+            animation: slideDown 0.4s ease;
+        }
+
+        .rationale strong {
+            color: var(--text-main);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .quiz-footer {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn-nav {
+            background-color: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            padding: 12px 28px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-nav:hover:not(:disabled) {
+            background-color: #0842A0;
+        }
+
+        .btn-nav:disabled {
+            background-color: #E0E0E0;
+            color: #9E9E9E;
+            cursor: not-allowed;
+        }
+
+        /* Pantalla Resultados e Historial */
+        .results-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .results-emoji {
+            font-size: 5rem;
+            margin-bottom: 10px;
+        }
+
+        .anim-happy {
+            animation: bounce 1s infinite alternate;
+        }
+
+        .anim-sad {
+            animation: shake 0.5s infinite;
+        }
+
+        .results-score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .btn-home {
+            background-color: var(--bg-option);
+            color: var(--text-main);
+            border: none;
+            border-radius: 24px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-home:hover {
+            background-color: var(--border-color);
+        }
+
+        .history-item {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--color-primary);
+        }
+
+        .mistake-log {
+            background: var(--bg-incorrect);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+
+        .mistake-log span {
+            font-weight: 600;
+            color: var(--color-incorrect);
+        }
+
+        .mistake-log .corr {
+            color: var(--color-correct);
+        }
+
+        /* ANIMACIONES */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            75% {
+                transform: translateX(-5px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        /* DISEÑO ADAPTABLE A CELULARES */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .modules-header h1 {
+                font-size: 1.3rem;
+            }
+
+            .btn-history-top {
+                position: relative;
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+            .question-text {
+                font-size: 1.1rem;
+            }
+
+            .options-container {
+                margin-left: 0;
+            }
+
+            .rationale {
+                margin-left: 0;
+                border-radius: 8px;
+                border-left: none;
+                border-top: 4px solid var(--color-primary);
+            }
+
+            .quiz-footer {
+                flex-direction: row;
+                gap: 10px;
+            }
+
+            .btn-nav {
+                padding: 12px 20px;
+                flex: 1;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container">
+
+        <div id="view-modules" class="card">
+            <div class="modules-header">
+                <button class="btn-history-top" onclick="showHistory()">Ver Historial 📊</button>
+                <h1>Cuestionario: Validación de conocimientos</h1>
+                <p style="color: var(--text-secondary);">Administración</p>
+            </div>
+            <div class="modules-grid">
+                <button class="module-btn" onclick="showParts(1)">
+                    <h3>Módulo 1</h3>
+                    <p>Período 1 - Estrategia y Finanzas</p>
+                </button>
+                <button class="module-btn" onclick="showParts(2)">
+                    <h3>Módulo 2</h3>
+                    <p>Período 2 - Tecnología y RRHH</p>
+                </button>
+                <button class="module-btn" onclick="showParts(3)">
+                    <h3>Módulo 3</h3>
+                    <p>Período 3 - Gestión y Legal</p>
+                </button>
+                <button class="module-btn" onclick="showParts(4)">
+                    <h3>Módulo 4</h3>
+                    <p>Período 4 - Análisis y Logística</p>
+                </button>
+            </div>
+        </div>
+
+        <div id="view-submodules" class="card hidden">
+            <div style="display: flex; justify-content: flex-start;">
+                <button class="btn-back-anim" onclick="goHome()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Regresar
+                </button>
+            </div>
+            <div class="modules-header" style="margin-top: 10px;">
+                <h1 id="submodules-title">Módulo</h1>
+                <p style="color: var(--text-secondary);">Selecciona la parte que deseas practicar</p>
+            </div>
+            <div class="modules-grid" id="submodules-grid">
+            </div>
+        </div>
+
+        <div id="view-history" class="card hidden">
+            <div class="quiz-header">
+                <div class="quiz-title"><span>📊 Historial de Intentos y Errores</span></div>
+                <button class="icon-btn" onclick="goHome()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div id="history-container" style="max-height: 60vh; overflow-y: auto; padding-right: 10px;"></div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn-home" onclick="clearHistory()">Borrar Historial</button>
+            </div>
+        </div>
+
+        <div id="view-quiz" class="card hidden">
+            <div class="quiz-header">
+                <div class="quiz-title"><span id="module-title-display">Módulo</span></div>
+                <button class="icon-btn" onclick="goBackToSubmodules()" title="Cerrar y volver a las partes">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="progress-section">
+                <div class="progress-segments" id="progress-bar"></div>
+                <div class="progress-text" id="progress-text">1/x</div>
+            </div>
+            <div id="quiz-content">
+                <div class="question-container">
+                    <div class="question-number" id="q-number">1.</div>
+                    <div class="question-text" id="q-text">Cargando...</div>
+                </div>
+                <div class="options-container" id="options-container"></div>
+                <div class="rationale" id="rationale-container">
+                    <strong>Justificación:</strong> <span id="rationale-text"></span>
+                </div>
+            </div>
+            <div class="quiz-footer">
+                <button class="btn-nav" id="btn-prev" onclick="prevQuestion()">Anterior</button>
+                <button class="btn-nav" id="btn-next" onclick="nextQuestion()">Siguiente</button>
+            </div>
+        </div>
+
+        <div id="view-results" class="card hidden">
+            <div class="results-screen">
+                <div id="result-emoji" class="results-emoji"></div>
+                <h2 id="result-message">¡Completado!</h2>
+                <div class="results-score" id="result-score-text">
+                    <span id="final-correct">0</span> / <span id="final-total">0</span>
+                </div>
+                <button class="btn-nav" style="margin-bottom: 15px;" onclick="showHistory()">Revisar mis
+                    errores</button><br>
+                <button class="btn-home" onclick="goBackToSubmodules()">Volver a las partes</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ==========================================
+        // BASE DE DATOS DE PREGUNTAS (ADMINISTRACIÓN)
+        // ==========================================
+        const quizData = {
+            1: {
+                title: "Módulo 1: Período 1 - Estrategia, Finanzas y Contabilidad",
+                questions: [
+                    { q: "¿Cuál de las siguientes no es una dimensión de análisis del entorno externo en la formulación de estrategias empresariales?", options: ["Factores económicos", "Factores psicológicos", "Factores político-legales", "Factores tecnológicos"], correctIndex: 1, rationale: "El análisis del entorno externo (como el modelo PESTEL) evalúa factores Políticos, Económicos, Sociales, Tecnológicos, Ecológicos y Legales. Los factores psicológicos se estudian a nivel individual (consumidor), no del macroentorno." },
+                    { q: "¿Qué herramienta se utiliza para analizar las capacidades internas de una empresa?", options: ["Análisis FODA", "Análisis PESTEL", "Análisis VRIO", "Análisis de la cadena de valor"], correctIndex: 2, rationale: "El análisis VRIO evalúa si los recursos y capacidades de una empresa son Valiosos, Raros, Inimitables y Organizados, determinando así su ventaja competitiva interna." },
+                    { q: "¿Cuál de los siguientes no es un tipo de estrategia genérica según Porter?", options: ["Liderazgo en costos", "Diferenciación", "Enfoque", "Expansión horizontal"], correctIndex: 3, rationale: "Las tres estrategias genéricas de Michael Porter para lograr una ventaja competitiva son: Liderazgo en Costos, Diferenciación y Enfoque (o Alta Segmentación). La expansión horizontal es una estrategia corporativa de crecimiento." },
+                    { q: "¿Cuál es el objetivo principal del análisis FODA (DAFO)?", options: ["Identificar fortalezas y debilidades internas", "Analizar el entorno externo", "Definir la visión y misión de la empresa", "Determinar estrategias competitivas"], correctIndex: 0, rationale: "El FODA permite realizar un diagnóstico identificando los factores internos (Fortalezas y Debilidades) de la organización frente a los externos." },
+                    { q: "Una empresa manufacturera enfrenta una disminución en su participación de mercado debido a la entrada de competidores con productos similares, pero a precios más bajos. ¿Cuál de las siguientes estrategias sería más adecuada para enfrentar esta situación?", options: ["Diferenciación de producto", "Reducción de costos", "Expansión de mercado", "Fusión con un competidor"], correctIndex: 1, rationale: "Para competir directamente contra rivales que ofrecen productos similares a precios bajos, la empresa debe optimizar su estructura y lograr una reducción de costos para igualar o mejorar esos precios sin perder rentabilidad." },
+                    { q: "¿Qué elemento de la comunicación se refiere al proceso de codificación y decodificación del mensaje?", options: ["Canal", "Emisor", "Feedback", "Código"], correctIndex: 3, rationale: "El código es el conjunto de signos y reglas (como un idioma o un lenguaje técnico) que el emisor utiliza para codificar el mensaje y que el receptor debe decodificar para comprenderlo." },
+                    { q: "¿Qué tipo de comunicación se establece entre un superior y un subordinado dentro de una organización?", options: ["Comunicación formal", "Comunicación informal", "Comunicación ascendente", "Comunicación descendente"], correctIndex: 3, rationale: "La comunicación descendente es el flujo de información y directrices que viaja desde los niveles jerárquicos superiores (jefes) hacia los niveles inferiores (subordinados)." },
+                    { q: "¿Qué componente de la comunicación se refiere a la retroalimentación que el receptor envía al emisor?", options: ["Canal", "Ruido", "Feedback", "Código"], correctIndex: 2, rationale: "El feedback o retroalimentación es la respuesta del receptor, la cual permite al emisor saber si el mensaje original fue recibido e interpretado correctamente." },
+                    { q: "Una empresa ha lanzado un nuevo producto al mercado, pero ha recibido críticas negativas en redes sociales debido a un problema de calidad que afecta a algunos clientes. ¿Qué estrategia de comunicación debería adoptar la empresa para manejar esta crisis?", options: ["Comunicación defensiva", "Comunicación proactiva", "Comunicación reactiva", "Comunicación informativa"], correctIndex: 1, rationale: "Una comunicación proactiva en crisis implica tomar la iniciativa, informar transparentemente, ofrecer disculpas y plantear soluciones rápidamente, demostrando responsabilidad." },
+                    { q: "Una empresa internacional está preparando una campaña publicitaria para expandir su presencia en nuevos mercados. ¿Qué consideraciones principales debería tener en cuenta al adaptar su mensaje a diferentes culturas?", options: ["Adaptación del tono y estilo de comunicación", "Mantenimiento de la misma estrategia global", "Uso exclusivo del idioma inglés", "Enfoque en la diferenciación de producto"], correctIndex: 0, rationale: "La comunicación intercultural efectiva exige adaptar el tono, estilo y mensaje a las normas, valores y sensibilidades del público local para evitar rechazo o malentendidos." },
+                    { q: "¿Cuál de los siguientes términos se refiere al costo del dinero y se expresa como un porcentaje?", options: ["Capital", "Interés", "Inversión", "Depreciación"], correctIndex: 1, rationale: "El interés es esencialmente el precio que se paga por el uso del dinero prestado a lo largo del tiempo, generalmente calculado como una tasa porcentual." },
+                    { q: "¿Qué concepto financiero se utiliza para medir la rentabilidad de una inversión?", options: ["Amortización", "Tasa de descuento", "Tasa de retorno", "Depreciación"], correctIndex: 2, rationale: "La Tasa de Retorno (como el ROI) es el indicador financiero fundamental que compara el beneficio económico obtenido con la cantidad de capital invertido originalmente." },
+                    { q: "¿Cuál de las siguientes afirmaciones describe mejor el concepto de 'flujo de caja'?", options: ["El balance financiero de una empresa en un periodo específico", "El ingreso total generado por una empresa", "El movimiento de efectivo dentro y fuera de una empresa", "La ganancia neta de una empresa después de impuestos"], correctIndex: 2, rationale: "El flujo de caja (cash flow) es el registro detallado y cronológico de todas las entradas (cobros) y salidas (pagos) de dinero en efectivo de la organización." },
+                    { q: "¿Cuál es la principal función del presupuesto de capital en una empresa?", options: ["Controlar los gastos operativos diarios", "Planificar y gestionar las inversiones a largo plazo", "Determinar el costo de los productos vendidos", "Establecer metas de ventas y marketing"], correctIndex: 1, rationale: "El presupuesto de capital se utiliza estratégicamente para evaluar, planificar y decidir sobre la viabilidad de inversiones en activos fijos o proyectos a largo plazo." },
+                    { q: "¿Qué indicador financiero mide la eficiencia con la que una empresa utiliza sus activos para generar ventas?", options: ["Rentabilidad sobre activos (ROA)", "Margen neto de utilidad", "Rotación de inventarios", "Apalancamiento financiero"], correctIndex: 0, rationale: "El ROA (Return on Assets) muestra qué tan eficiente es la gerencia de una empresa al utilizar sus activos totales (maquinaria, efectivo, equipos) para generar ganancias." },
+                    { q: "¿Qué principio contable establece que los activos deben registrarse al costo histórico?", options: ["Principio de devengo", "Principio de entidad", "Principio de consistencia", "Principio del costo"], correctIndex: 3, rationale: "El Principio del Costo (o costo histórico) dicta que los bienes y derechos deben contabilizarse por su valor de adquisición original, independientemente de fluctuaciones posteriores de mercado." },
+                    { q: "¿Qué tipo de cuenta representa el dinero que debe una empresa a sus proveedores por bienes o servicios adquiridos a crédito?", options: ["Activo", "Pasivo", "Patrimonio neto", "Ingreso"], correctIndex: 1, rationale: "Los pasivos representan todas las deudas y obligaciones financieras actuales que la empresa tiene con terceros, como las cuentas por pagar a los proveedores." },
+                    { q: "¿Cuál es el documento contable que registra las ventas de bienes o servicios a crédito?", options: ["Balance general", "Estado de resultados", "Libro diario", "Libro mayor"], correctIndex: 2, rationale: "El Libro Diario es el documento base y cronológico donde se asientan formalmente (mediante comprobantes) todas las transacciones financieras, incluyendo las ventas a crédito." },
+                    { q: "¿Qué término contable se utiliza para describir la diferencia entre los ingresos y los gastos en un periodo contable específico?", options: ["Activo neto", "Patrimonio neto", "Resultado neto", "Flujo de efectivo"], correctIndex: 2, rationale: "El Resultado Neto (que puede ser utilidad o pérdida) se obtiene en el Estado de Resultados al restar todos los gastos e impuestos de los ingresos generados en el periodo." },
+                    { q: "¿Qué principio contable dicta que las transacciones deben registrarse en la contabilidad en el periodo en el que se generan, independientemente de cuándo se reciban o paguen las cantidades en efectivo?", options: ["Principio de devengo", "Principio de entidad", "Principio de consistencia", "Principio del costo"], correctIndex: 0, rationale: "El Principio de Devengo exige que los hechos económicos (ingresos o gastos) se reconozcan y registren contablemente en el momento en que ocurren, no cuando se intercambia el dinero." },
+                    { q: "¿Qué elemento del marketing mix se refiere a las actividades destinadas a informar, persuadir y recordar al mercado objetivo sobre un producto o servicio?", options: ["Producto", "Precio", "Plaza", "Promoción"], correctIndex: 3, rationale: "La 'Promoción' engloba la publicidad, las relaciones públicas, las ventas y cualquier otra herramienta comunicacional diseñada para dar a conocer la oferta al mercado." },
+                    { q: "¿Qué término se refiere a la cantidad de dinero que un consumidor está dispuesto a pagar por un producto o servicio?", options: ["Costo", "Precio", "Valor", "Beneficio"], correctIndex: 1, rationale: "El precio es la cantidad monetaria (o su equivalente) que el consumidor entrega en intercambio a cambio de los beneficios de poseer o utilizar un producto." },
+                    { q: "¿Cuál de los siguientes no es un factor que afecta el comportamiento del consumidor?", options: ["Cultura", "Demografía", "Clima organizacional", "Factores personales"], correctIndex: 2, rationale: "El clima organizacional afecta el comportamiento interno de los empleados de una empresa. Las decisiones de compra del consumidor son influidas por su cultura, demografía y psicología." },
+                    { q: "¿Cuál de los siguientes es un ejemplo de una estrategia de marketing directo?", options: ["Publicidad en televisión", "Venta en tiendas minoristas", "Marketing por correo electrónico", "Promoción en redes sociales"], correctIndex: 2, rationale: "El marketing por correo electrónico (email marketing) es directo porque permite a la marca comunicarse de manera individual y personalizada con usuarios específicos." },
+                    { q: "¿Cuál de las siguientes opciones describe mejor el concepto de segmentación de mercado?", options: ["Ofrecer el mismo producto a todos los clientes", "Dividir el mercado en grupos con características y necesidades similares", "Aumentar el precio del producto para obtener más ganancias", "Reducir el tamaño del mercado objetivo"], correctIndex: 1, rationale: "La segmentación consiste en agrupar un mercado heterogéneo en nichos más pequeños y homogéneos, permitiendo dirigir estrategias de marketing mucho más efectivas y precisas." },
+                    { q: "¿Cuál de las siguientes actividades NO es parte del proceso de auditoría?", options: ["Planificación", "Ejecución", "Marketing", "Informe y comunicación"], correctIndex: 2, rationale: "La auditoría es un proceso sistemático e independiente de revisión (planificación, ejecución de pruebas y emisión de informes). El marketing corresponde a la gestión comercial, no al control." },
+                    { q: "¿Qué tipo de auditoría se centra en revisar los estados financieros de una empresa para asegurar su precisión y conformidad con los principios contables?", options: ["Auditoría operativa", "Auditoría externa", "Auditoría interna", "Auditoría financiera"], correctIndex: 3, rationale: "La auditoría financiera examina específicamente los libros, registros y estados financieros de la entidad para dictaminar sobre su razonabilidad y cumplimiento legal." },
+                    { q: "¿Cuál de los siguientes no es un objetivo típico de una auditoría interna?", options: ["Mejorar la eficiencia operativa", "Evaluar el cumplimiento de normativas externas", "Garantizar la exactitud de los estados financieros", "Promover la empresa en redes sociales"], correctIndex: 3, rationale: "El objetivo de la auditoría interna es agregar valor y mejorar las operaciones evaluando la gestión de riesgos y el control interno, no realizar funciones promocionales." },
+                    { q: "¿Cuál de los siguientes documentos es una fuente de evidencia externa utilizada durante una auditoría?", options: ["Informes de empleados", "Facturas de proveedores", "Correos electrónicos internos", "Actas de reuniones internas"], correctIndex: 1, rationale: "Las facturas de proveedores son documentos generados por terceros ajenos a la organización auditada, lo que les otorga mayor independencia, confiabilidad y valor probatorio." },
+                    { q: "¿Qué es un hallazgo de auditoría?", options: ["Una observación subjetiva del auditor", "Un error matemático en los estados financieros", "Un hecho que el auditor considera relevante y merece ser comunicado", "Un reporte sobre la moral de los empleados"], correctIndex: 2, rationale: "Un hallazgo es la diferencia material encontrada por el auditor entre la norma ('lo que debe ser') y la realidad operativa ('lo que es'), requiriendo ser reportada para su corrección." }
+                ]
+            },
+            2: {
+                title: "Módulo 2: Período 2 - Tecnología y RRHH",
+                questions: [
+                    {
+                        q: "¿Cuál de las siguientes tecnologías se utiliza principalmente para almacenar grandes cantidades de datos y facilitar su análisis?",
+                        options: [
+                            "CRM (Customer Relationship Management)",
+                            "Cloud computing",
+                            "Blockchain",
+                            "Realidad aumentada"
+                        ],
+                        correctIndex: 1,
+                        rationale: "El Cloud Computing (computación en la nube) permite el almacenamiento masivo de datos y el acceso bajo demanda a recursos informáticos sin requerir de costosa infraestructura física local."
+                    },
+                    {
+                        q: "¿Qué función cumple un sistema CRM (Customer Relationship Management) en una empresa?",
+                        options: [
+                            "Gestión de relaciones con los proveedores",
+                            "Gestión de relaciones con los clientes",
+                            "Gestión de recursos humanos",
+                            "Gestión de la cadena de suministro"
+                        ],
+                        correctIndex: 1,
+                        rationale: "El CRM es un software diseñado estratégicamente para administrar, analizar y mejorar todas las interacciones y relaciones de la empresa con sus clientes actuales y potenciales."
+                    },
+                    {
+                        q: "¿Qué es el e-commerce?",
+                        options: [
+                            "Compra y venta de productos en tiendas físicas",
+                            "Compra y venta de productos a través de internet",
+                            "Comunicación interna en una empresa",
+                            "Compartir información sobre la empresa en redes sociales"
+                        ],
+                        correctIndex: 1,
+                        rationale: "El comercio electrónico (e-commerce) consiste en la distribución, venta, compra, marketing y suministro de información de productos o servicios completamente a través de Internet."
+                    },
+                    {
+                        q: "¿Qué es la inteligencia artificial (IA) en el contexto empresarial?",
+                        options: [
+                            "Un sistema para realizar presentaciones corporativas",
+                            "Tecnología que permite a las máquinas aprender y tomar decisiones similares a los humanos",
+                            "Una plataforma para enviar correos electrónicos masivos",
+                            "Un sistema para controlar la iluminación en oficinas"
+                        ],
+                        correctIndex: 1,
+                        rationale: "La IA en las empresas se utiliza para automatizar procesos complejos, analizar enormes volúmenes de datos y simular el razonamiento humano para la toma de decisiones estratégicas."
+                    },
+                    {
+                        q: "¿Qué tecnología permite a las empresas almacenar y acceder a grandes cantidades de datos de manera eficiente, facilitando análisis avanzados y toma de decisiones?",
+                        options: [
+                            "Cloud Computing",
+                            "Blockchain",
+                            "Realidad Aumentada",
+                            "Machine Learning"
+                        ],
+                        correctIndex: 0,
+                        rationale: "La nube (Cloud Computing) ofrece escalabilidad ilimitada y capacidad de procesamiento remoto, siendo la base para manejar el Big Data de forma eficiente y económica."
+                    },
+                    {
+                        q: "¿Qué es Big Data en el contexto financiero?",
+                        options: [
+                            "Un software para hacer análisis de mercado",
+                            "Conjunto de datos que son demasiado grandes y complejos para ser procesados por sistemas tradicionales",
+                            "Método para reducir costos operativos",
+                            "Estrategia para aumentar la rentabilidad de las inversiones"
+                        ],
+                        correctIndex: 1,
+                        rationale: "En el sector financiero, el Big Data incluye volúmenes masivos de transacciones diarias e historiales de clientes que requieren tecnologías de última generación para ser procesados y analizados."
+                    },
+                    {
+                        q: "¿Qué es la gestión financiera?",
+                        options: [
+                            "Proceso para elaborar informes de ventas",
+                            "Administración de los recursos financieros de una empresa para alcanzar sus objetivos",
+                            "Uso de redes sociales para promover productos",
+                            "Técnica para organizar eventos corporativos"
+                        ],
+                        correctIndex: 1,
+                        rationale: "Implica la planificación, organización, dirección y control estricto de los recursos económicos de la empresa con el fin de maximizar su rentabilidad y mantener su liquidez."
+                    },
+                    {
+                        q: "¿Cuál de las siguientes métricas financieras se utiliza para medir la rentabilidad de una empresa?",
+                        options: [
+                            "NPS (Net Promoter Score)",
+                            "ROI (Return on Investment)",
+                            "CTR (Click Through Rate)",
+                            "CPA (Cost Per Acquisition)"
+                        ],
+                        correctIndex: 1,
+                        rationale: "El Retorno sobre la Inversión (ROI) es el indicador financiero clave que compara el beneficio económico neto obtenido en relación a la inversión de capital realizada."
+                    },
+                    {
+                        q: "¿Qué es el análisis de riesgos financieros?",
+                        options: [
+                            "Técnica para calcular los beneficios de una inversión",
+                            "Evaluación de posibles pérdidas financieras y su impacto en la empresa",
+                            "Método para aumentar la liquidez de la empresa",
+                            "Estrategia para reducir la competencia en el mercado"
+                        ],
+                        correctIndex: 1,
+                        rationale: "Consiste en identificar, analizar y evaluar las amenazas económicas (como fluctuaciones del mercado, inflación o impagos) para mitigarlas preventivamente."
+                    },
+                    {
+                        q: "¿Qué es la minería de datos (data mining) en el contexto financiero?",
+                        options: [
+                            "Proceso para extraer oro y plata",
+                            "Técnica para analizar grandes cantidades de datos y descubrir patrones ocultos",
+                            "Método para reducir el tamaño de los informes financieros",
+                            "Estrategia para aumentar la rentabilidad de las inversiones"
+                        ],
+                        correctIndex: 1,
+                        rationale: "Permite a las instituciones financieras predecir tendencias del mercado, identificar transacciones fraudulentas y comprender el comportamiento financiero de sus clientes."
+                    },
+                    {
+                        q: "¿Qué función principal cumple el departamento de Recursos Humanos en una organización?",
+                        options: [
+                            "Gestión de las redes sociales de la empresa",
+                            "Administración y desarrollo del talento humano",
+                            "Elaboración de informes financieros",
+                            "Supervisión de la producción"
+                        ],
+                        correctIndex: 1,
+                        rationale: "RRHH se encarga del ciclo de vida completo del empleado: reclutamiento, contratación, capacitación, evaluación del desempeño, bienestar y retención del talento."
+                    },
+                    {
+                        q: "¿Cuál de las siguientes actividades NO es parte del proceso de reclutamiento y selección de personal?",
+                        options: [
+                            "Entrevistas de selección",
+                            "Evaluación del desempeño laboral",
+                            "Publicación de vacantes",
+                            "Pruebas psicométricas"
+                        ],
+                        correctIndex: 1,
+                        rationale: "La evaluación del desempeño se realiza cuando el empleado ya forma parte activa de la empresa, no durante la fase previa de reclutamiento y contratación."
+                    },
+                    {
+                        q: "¿Qué es la evaluación del desempeño en el contexto de Recursos Humanos?",
+                        options: [
+                            "Proceso para calcular los costos de producción",
+                            "Análisis del mercado laboral",
+                            "Evaluación periódica del rendimiento de los empleados",
+                            "Técnica para reducir los conflictos internos"
+                        ],
+                        correctIndex: 2,
+                        rationale: "Es un proceso sistemático para medir de forma objetiva la calidad del trabajo de un empleado, identificando sus fortalezas institucionales y sus áreas de mejora."
+                    },
+                    {
+                        q: "¿Cuál de las siguientes estrategias se utiliza para retener talento en una organización?",
+                        options: [
+                            "Reducir los salarios de los empleados",
+                            "Ofrecer oportunidades de desarrollo profesional",
+                            "Implementar horarios de trabajo flexibles",
+                            "Externalizar todos los departamentos"
+                        ],
+                        correctIndex: 1,
+                        rationale: "El crecimiento profesional, los ascensos y los planes de carrera son uno de los principales motivadores para que los empleados valiosos decidan permanecer en la empresa a largo plazo."
+                    },
+                    {
+                        q: "¿Cuál de los siguientes métodos de evaluación del desempeño es más adecuado para medir competencias blandas y habilidades interpersonales?",
+                        options: [
+                            "Escalas gráficas.",
+                            "Entrevistas de evaluación.",
+                            "Autoevaluación.",
+                            "Evaluación 360 grados."
+                        ],
+                        correctIndex: 3,
+                        rationale: "La evaluación de 360 grados recopila retroalimentación anónima de jefes, compañeros pares e incluso subordinados, ofreciendo una visión integral de las habilidades sociales del evaluado."
+                    },
+                    {
+                        q: "¿Qué se entiende por innovación en el contexto empresarial?",
+                        options: [
+                            "Mantener las mismas prácticas comerciales",
+                            "Implementar cambios significativos que generen valor",
+                            "Reducir la inversión en tecnología",
+                            "Externalizar todas las funciones operativas"
+                        ],
+                        correctIndex: 1,
+                        rationale: "La innovación no es solo inventar algo nuevo, sino lograr aplicar esas nuevas ideas, productos o procesos de forma exitosa en el mercado para crear un valor tangible."
+                    },
+                    {
+                        q: "¿Cuál es el objetivo principal de la automatización de procesos?",
+                        options: [
+                            "Aumentar la complejidad de las operaciones",
+                            "Reducir los costos y mejorar la eficiencia",
+                            "Incrementar la burocracia en la empresa",
+                            "Externalizar todos los departamentos"
+                        ],
+                        correctIndex: 1,
+                        rationale: "Al reemplazar tareas manuales y repetitivas por sistemas tecnológicos, la empresa minimiza el margen de error humano, ahorra tiempo de ejecución y optimiza sus recursos."
+                    },
+                    {
+                        q: "¿Qué beneficios puede aportar la innovación a una empresa?",
+                        options: [
+                            "Aumentar la resistencia al cambio",
+                            "Mejorar la competitividad y la productividad",
+                            "Reducir la inversión en investigación y desarrollo",
+                            "Limitar la expansión geográfica"
+                        ],
+                        correctIndex: 1,
+                        rationale: "Las empresas que innovan constantemente logran adaptarse a los cambios del mercado, diferenciándose de sus competidores y encontrando formas más eficientes de trabajar."
+                    },
+                    {
+                        q: "¿Qué papel juega la creatividad en el proceso de innovación?",
+                        options: [
+                            "Mantener las mismas prácticas comerciales",
+                            "Implementar cambios significativos que generen valor",
+                            "Reducir la inversión en tecnología",
+                            "Externalizar todas las funciones operativas"
+                        ],
+                        correctIndex: 1,
+                        rationale: "La creatividad es el motor inicial: es la capacidad de generar las ideas novedosas que, una vez llevadas a la práctica de forma exitosa, se convierten en innovaciones que generan valor."
+                    },
+                    {
+                        q: "Un departamento de recursos humanos busca simplificar el proceso de reclutamiento y selección mediante la automatización de tareas administrativas. ¿Qué herramienta sería más beneficiosa para este propósito?",
+                        options: [
+                            "Sistemas de gestión de aprendizaje (LMS)",
+                            "Plataformas de gestión de proyectos",
+                            "Software de gestión de relaciones con clientes (CRM)",
+                            "Plataformas de reclutamiento online"
+                        ],
+                        correctIndex: 3,
+                        rationale: "Los sistemas especializados (como los ATS o plataformas de empleo online) automatizan el filtrado masivo de currículums, la programación de entrevistas y el seguimiento de los candidatos."
+                    },
+                    {
+                        q: "¿Cuál de las siguientes afirmaciones describe mejor la diferencia entre costo estándar y costo actual en la contabilidad de costos?",
+                        options: [
+                            "El costo estándar es el costo real de producción, mientras que el costo actual es una estimación",
+                            "El costo estándar es una estimación de costos futuros, mientras que el costo actual es el costo real incurrido",
+                            "El costo estándar se utiliza para planificar presupuestos, mientras que el costo actual se utiliza para informes financieros",
+                            "El costo estándar incluye solo costos variables, mientras que el costo actual incluye costos fijos y variables"
+                        ],
+                        correctIndex: 1,
+                        rationale: "El costo estándar funciona como una meta o presupuesto cuidadosamente planificado, mientras que el costo actual (o histórico) es lo que realmente se terminó gastando en la producción."
+                    },
+                    {
+                        q: "¿Cuál es el objetivo principal del presupuesto de capital en una empresa?",
+                        options: [
+                            "Planificar los gastos generales",
+                            "Evaluar la rentabilidad de un proyecto de inversión a largo plazo",
+                            "Determinar el precio de venta de los productos",
+                            "Controlar los costos indirectos de fabricación"
+                        ],
+                        correctIndex: 1,
+                        rationale: "Se utiliza para la toma de decisiones estratégicas respecto a grandes desembolsos de dinero (como comprar maquinaria nueva o abrir una planta), evaluando si generarán beneficios a futuro."
+                    },
+                    {
+                        q: "¿Qué es el análisis de desviaciones en la contabilidad de costos?",
+                        options: [
+                            "Método para reducir el presupuesto maestro",
+                            "Técnica para comparar los costos reales con los estándares y determinar las variaciones",
+                            "Estrategia para externalizar funciones administrativas",
+                            "Proceso para calcular la depreciación de activos fijos"
+                        ],
+                        correctIndex: 1,
+                        rationale: "Al contrastar lo que la empresa 'planeó gastar' contra lo que 'realmente gastó', la gerencia puede identificar rápidamente ineficiencias o ahorros en la cadena de producción."
+                    },
+                    {
+                        q: "¿Cuál es la fórmula para calcular el costo unitario de producción?",
+                        options: [
+                            "Costo total / Unidades producidas",
+                            "Costo fijo total / Unidades vendidas",
+                            "Costo variable total / Unidades producidas",
+                            "Ingreso total / Unidades vendidas"
+                        ],
+                        correctIndex: 0,
+                        rationale: "Para saber cuánto costó fabricar un solo producto, se suma la totalidad de los costos (fijos y variables) y se divide equitativamente entre el número total de unidades terminadas."
+                    },
+                    {
+                        q: "Proyecto A: recuperación de 3 años y TIR del 12%. Proyecto B: recuperación de 4 años y TIR del 15%. Tasa de descuento 10%. ¿Cuál proyecto debería seleccionar basándose en el criterio de TIR?",
+                        options: [
+                            "Proyecto A",
+                            "Proyecto B",
+                            "Ambos proyectos son igualmente viables",
+                            "Ninguno de los proyectos es viable"
+                        ],
+                        correctIndex: 1,
+                        rationale: "Bajo el criterio financiero de la Tasa Interna de Retorno (TIR), se debe elegir el proyecto que ofrezca el mayor porcentaje de rentabilidad (15% vs 12%), siempre que supere la tasa de descuento."
+                    },
+                    {
+                        q: "¿Cuál de las siguientes tecnologías forma parte fundamental de la transformación digital en las empresas?",
+                        options: [
+                            "Máquinas de escribir",
+                            "Fax",
+                            "Inteligencia Artificial (IA)",
+                            "Radiotelegrafía"
+                        ],
+                        correctIndex: 2,
+                        rationale: "La Inteligencia Artificial (IA), junto con el Internet de las Cosas (IoT) y la computación en la nube, es uno de los pilares tecnológicos modernos que impulsan la transformación y automatización empresarial."
+                    },
+                    {
+                        q: "¿Qué significa IoT (Internet of Things) en el contexto de la transformación digital?",
+                        options: [
+                            "Internet de las Computadoras",
+                            "Internet de las Empresas",
+                            "Internet de los Objetos",
+                            "Internet de las Comunicaciones"
+                        ],
+                        correctIndex: 2,
+                        rationale: "El Internet de las Cosas (o de los Objetos) consiste en conectar a la red dispositivos físicos cotidianos o industriales mediante sensores, permitiéndoles enviar y recibir datos en tiempo real."
+                    },
+                    {
+                        q: "¿Cuál es el principal objetivo de implementar Big Data en una empresa durante su transformación digital?",
+                        options: [
+                            "Reducir la cantidad de datos almacenados",
+                            "Analizar grandes volúmenes de datos para obtener insights y mejorar la toma de decisiones",
+                            "Limitar el acceso a la información",
+                            "Externalizar todas las funciones de TI"
+                        ],
+                        correctIndex: 1,
+                        rationale: "El verdadero valor del Big Data no radica simplemente en guardar mucha información, sino en procesarla para descubrir patrones de consumo y métricas predictivas que guíen a la empresa."
+                    },
+                    {
+                        q: "¿Qué beneficios puede ofrecer la transformación digital en la relación con los clientes?",
+                        options: [
+                            "Reducir la comunicación con los clientes",
+                            "Mejorar la experiencia del cliente y la personalización de servicios",
+                            "Limitar la innovación en productos",
+                            "Externalizar el servicio al cliente"
+                        ],
+                        correctIndex: 1,
+                        rationale: "Herramientas digitales como el CRM y la IA permiten a las empresas conocer a profundidad a cada usuario, ofreciéndole respuestas rápidas, atención omnicanal y ofertas adaptadas a sus gustos."
+                    },
+                    {
+                        q: "¿Qué papel juegan las plataformas digitales en la transformación digital de los negocios?",
+                        options: [
+                            "Aumentar la burocracia interna",
+                            "Reducir la eficiencia operativa",
+                            "Facilitar la interacción con clientes y socios comerciales",
+                            "Limitar el acceso a la información"
+                        ],
+                        correctIndex: 2,
+                        rationale: "Las plataformas (como el e-commerce, portales B2B o aplicaciones móviles) eliminan las barreras geográficas y de horario, agilizando cualquier tipo de transacción o comunicación corporativa."
+                    }
+                ]
+            },
+            3: {
+                title: "Módulo 3: Período 3 - Gestión Estratégica y Legal",
+                questions: [
+                    {
+                        q: "¿Cuál de las siguientes actividades es parte del proceso de formulación estratégica en una organización?",
+                        options: [
+                            "Implementar sistemas de control interno",
+                            "Evaluar el desempeño del personal operativo",
+                            "Definir la misión, visión y valores de la empresa",
+                            "Reducir los costos de producción"
+                        ],
+                        correctIndex: 2,
+                        rationale: "La formulación estratégica es la primera etapa de la gestión corporativa, donde la alta dirección establece la identidad fundamental (misión, visión y valores) que guiará el rumbo de toda la organización a largo plazo."
+                    },
+                    {
+                        q: "¿Qué significa diversificación en el contexto de la estrategia empresarial?",
+                        options: [
+                            "Centrarse en un único producto o mercado",
+                            "Ampliar la gama de productos o servicios ofrecidos",
+                            "Reducir la competencia en el mercado",
+                            "Externalizar funciones operativas"
+                        ],
+                        correctIndex: 1,
+                        rationale: "La diversificación es una estrategia de crecimiento y mitigación de riesgos que implica entrar en nuevos mercados ofreciendo nuevos productos o servicios, reduciendo así la dependencia de una sola línea de negocio."
+                    },
+                    {
+                        q: "¿Qué herramienta estratégica se utiliza para evaluar el atractivo de diferentes industrias o segmentos de mercado?",
+                        options: [
+                            "Análisis FODA (Fortalezas, Oportunidades, Debilidades, Amenazas)",
+                            "Matriz de Ansoff",
+                            "Matriz de Posicionamiento Competitivo",
+                            "Análisis de las Cinco Fuerzas de Porter"
+                        ],
+                        correctIndex: 3,
+                        rationale: "El modelo de las Cinco Fuerzas de Michael Porter evalúa la rivalidad entre competidores, la amenaza de nuevos entrantes y sustitutos, y el poder de negociación de proveedores y clientes para determinar la rentabilidad potencial de un sector."
+                    },
+                    {
+                        q: "¿Cuál es el propósito del cuadro de mando integral (Balanced Scorecard) en la planificación estratégica?",
+                        options: [
+                            "Evaluar la satisfacción del cliente únicamente",
+                            "Medir el desempeño de la empresa en diferentes áreas estratégicas",
+                            "Limitar la inversión en investigación y desarrollo",
+                            "Externalizar todas las funciones administrativas"
+                        ],
+                        correctIndex: 1,
+                        rationale: "El Balanced Scorecard permite a los directivos evaluar el desempeño organizacional de forma equilibrada, utilizando cuatro perspectivas complementarias: financiera, del cliente, de procesos internos y de aprendizaje/crecimiento."
+                    },
+                    {
+                        q: "Para comenzar el proceso de planificación estratégica, la empresa XYZ decide realizar un análisis FODA. ¿Cuál de las siguientes opciones describe correctamente una oportunidad para la empresa?",
+                        options: [
+                            "La empresa tiene maquinaria obsoleta.",
+                            "Hay una creciente demanda en el mercado por productos sostenibles.",
+                            "La empresa tiene una alta rotación de empleados.",
+                            "La empresa tiene una fuerte presencia de marca en el mercado actual."
+                        ],
+                        correctIndex: 1,
+                        rationale: "En la matriz FODA, las 'Oportunidades' representan tendencias externas o situaciones favorables del entorno (como cambios en los hábitos de consumo) que la empresa puede aprovechar para crecer."
+                    },
+                    {
+                        q: "¿Cuál es uno de los principales beneficios de la digitalización en la gestión de operaciones empresariales?",
+                        options: [
+                            "Aumentar los costos operativos",
+                            "Reducir la eficiencia en la producción",
+                            "Mejorar la precisión en la toma de decisiones",
+                            "Limitar la comunicación interna"
+                        ],
+                        correctIndex: 2,
+                        rationale: "Al digitalizar procesos, las empresas generan y recolectan datos en tiempo real. Esto permite a los gerentes analizar patrones y tomar decisiones respaldadas por evidencia medible en lugar de intuición."
+                    },
+                    {
+                        q: "¿Qué papel juega la inteligencia artificial (IA) en la digitalización de una organización?",
+                        options: [
+                            "Incrementar los costos operativos",
+                            "Reducir la automatización de procesos",
+                            "Automatizar tareas repetitivas y mejorar el análisis predictivo",
+                            "Externalizar todas las funciones operativas"
+                        ],
+                        correctIndex: 2,
+                        rationale: "La Inteligencia Artificial libera a los empleados de labores mecánicas y utiliza complejos algoritmos para predecir escenarios futuros (como tendencias de ventas o fallas de equipos), optimizando la operatividad."
+                    },
+                    {
+                        q: "¿Qué implica la omnicanalidad en el contexto de la digitalización empresarial?",
+                        options: [
+                            "Limitar la presencia en redes sociales",
+                            "Ofrecer una experiencia de cliente consistente en todos los canales de comunicación",
+                            "Reducir la venta en línea",
+                            "Externalizar todas las operaciones de venta"
+                        ],
+                        correctIndex: 1,
+                        rationale: "La estrategia omnicanal integra todas las vías de contacto (tienda física, web, app, redes sociales) para que el cliente tenga una experiencia de compra unificada, coherente y sin interrupciones."
+                    },
+                    {
+                        q: "¿Cuál es el principal desafío de la ciberseguridad en un proceso de digitalización organizacional?",
+                        options: [
+                            "Limitar el acceso a internet",
+                            "Proteger los sistemas y datos contra amenazas cibernéticas",
+                            "Externalizar todas las funciones de TI",
+                            "Reducir la inversión en infraestructura digital"
+                        ],
+                        correctIndex: 1,
+                        rationale: "A medida que la empresa traslada sus operaciones e información confidencial a entornos digitales, se vuelve vulnerable a hackeos o secuestros de datos. Por ende, proteger esta infraestructura es su mayor reto."
+                    },
+                    {
+                        q: "¿Cuál es uno de los objetivos principales de la digitalización en la relación con los clientes?",
+                        options: [
+                            "Incrementar la distancia entre la empresa y los clientes",
+                            "Mejorar la experiencia del cliente y la personalización de servicios",
+                            "Limitar la comunicación con los clientes",
+                            "Externalizar todas las funciones de servicio al cliente"
+                        ],
+                        correctIndex: 1,
+                        rationale: "Las herramientas digitales (como los CRM) permiten conocer a fondo el historial y las preferencias de cada usuario, facilitando un trato más ágil, personalizado y satisfactorio en cada interacción."
+                    },
+                    {
+                        q: "¿Cuál es el principal objetivo del contrato de trabajo en la legislación laboral?",
+                        options: [
+                            "Limitar los derechos de los trabajadores",
+                            "Establecer las obligaciones de las partes involucradas",
+                            "Reducir la duración del contrato",
+                            "Externalizar todas las funciones laborales"
+                        ],
+                        correctIndex: 1,
+                        rationale: "El contrato de trabajo es el documento legal vinculante que otorga seguridad jurídica al detallar formalmente los derechos, deberes, remuneración y condiciones tanto para el empleador como para el empleado."
+                    },
+                    {
+                        q: "¿Qué derecho laboral garantiza la remuneración justa y equitativa por el trabajo realizado?",
+                        options: [
+                            "Derecho a la huelga",
+                            "Derecho a la sindicalización",
+                            "Derecho al salario digno",
+                            "Derecho a la jubilación anticipada"
+                        ],
+                        correctIndex: 2,
+                        rationale: "El derecho a un salario digno asegura que todo trabajador reciba una compensación económica adecuada que cubra sus necesidades básicas en contraprestación por su tiempo y esfuerzo."
+                    },
+                    {
+                        q: "¿Qué implica el principio de no discriminación en el ámbito laboral?",
+                        options: [
+                            "Limitar la contratación de personal diverso",
+                            "Promover la igualdad de oportunidades y trato justo para todos los trabajadores",
+                            "Externalizar todas las funciones de recursos humanos",
+                            "Reducir la diversidad en el lugar de trabajo"
+                        ],
+                        correctIndex: 1,
+                        rationale: "Este principio fundamental prohíbe cualquier distinción basada en raza, género, religión, edad u orientación, garantizando que el mérito y la capacidad sean los únicos criterios de selección y promoción."
+                    },
+                    {
+                        q: "¿Cuál es el objetivo principal de las leyes antimonopolio en el derecho mercantil?",
+                        options: [
+                            "Fomentar la concentración de poder en el mercado",
+                            "Limitar la competencia desleal entre empresas",
+                            "Externalizar todas las operaciones comerciales",
+                            "Reducir la cantidad de productos en el mercado"
+                        ],
+                        correctIndex: 1,
+                        rationale: "Las leyes antimonopolio (o leyes de competencia) están diseñadas para evitar prácticas abusivas, cárteles y monopolios, protegiendo así el libre mercado y garantizando opciones justas y precios competitivos para los consumidores."
+                    },
+                    {
+                        q: "¿Qué función cumple el registro mercantil en el marco legal de las empresas?",
+                        options: [
+                            "Limitar el acceso a la información financiera",
+                            "Promover la evasión fiscal",
+                            "Garantizar la publicidad de actos mercantiles y la seguridad jurídica",
+                            "Externalizar todas las funciones administrativas"
+                        ],
+                        correctIndex: 2,
+                        rationale: "El registro mercantil es una institución pública que inscribe la constitución de sociedades y sus actos relevantes, otorgando transparencia, legalidad y seguridad a quienes hacen negocios con la empresa."
+                    },
+                    {
+                        q: "¿Qué impuestos suelen incluirse dentro del concepto de impuestos indirectos?",
+                        options: [
+                            "Impuesto sobre la renta y el IVA (Impuesto al Valor Agregado)",
+                            "Impuesto de sociedades y derechos de importación",
+                            "Impuestos municipales y derechos de trámite aduanero",
+                            "IVA (Impuesto al Valor Agregado) y derechos de importación"
+                        ],
+                        correctIndex: 3,
+                        rationale: "Los impuestos indirectos son aquellos que se aplican sobre el consumo o el intercambio de bienes y servicios (como el IVA y los aranceles aduaneros), no directamente sobre los ingresos o el patrimonio de la persona."
+                    },
+                    {
+                        q: "¿Cuál es la diferencia principal entre evasión y elusión fiscal?",
+                        options: [
+                            "La elusión fiscal es legal y la evasión fiscal es ilegal",
+                            "La elusión fiscal es ilegal y la evasión fiscal es legal",
+                            "Ambos términos se refieren a lo mismo",
+                            "Limitar la inversión en tecnología fiscal"
+                        ],
+                        correctIndex: 0,
+                        rationale: "La elusión (planificación fiscal) aprovecha vacíos legales para pagar menos impuestos de forma lícita; la evasión, en cambio, implica ocultar ingresos o falsificar datos, lo cual constituye un delito penado por la ley."
+                    },
+                    {
+                        q: "¿Qué función cumple la retención en la fuente en el sistema tributario?",
+                        options: [
+                            "Reducir la carga impositiva sobre las empresas",
+                            "Limitar el acceso a créditos fiscales",
+                            "Recaudar impuestos de manera anticipada sobre ingresos de terceros",
+                            "Externalizar todas las funciones tributarias"
+                        ],
+                        correctIndex: 2,
+                        rationale: "Es un mecanismo de cobro anticipado donde quien realiza un pago está obligado a retener un porcentaje del impuesto correspondiente, asegurando así un flujo constante para el Estado y previniendo la evasión."
+                    },
+                    {
+                        q: "¿Cuál es el objetivo de la determinación tributaria en el proceso fiscal?",
+                        options: [
+                            "Limitar la presentación de declaraciones fiscales",
+                            "Determinar la base imponible y calcular el impuesto a pagar",
+                            "Externalizar todas las funciones fiscales",
+                            "Reducir la inversión en tecnología tributaria"
+                        ],
+                        correctIndex: 1,
+                        rationale: "La determinación tributaria es el acto legal por el cual se establece si existe una obligación fiscal, sobre qué monto exacto se debe tributar (base imponible) y cuál es la cantidad que corresponde liquidar."
+                    },
+                    {
+                        q: "¿Qué es el IVA (Impuesto al Valor Agregado) y cuál es su función principal?",
+                        options: [
+                            "Impuesto que grava la renta de las empresas",
+                            "Impuesto que grava la importación de bienes y servicios",
+                            "Impuesto que grava el consumo de bienes y servicios",
+                            "Limitar la inversión en bienes raíces"
+                        ],
+                        correctIndex: 2,
+                        rationale: "El IVA es un impuesto indirecto fundamental que recae sobre el valor añadido en cada etapa de la cadena de comercialización, y cuyo importe total es pagado por el consumidor final al adquirir el bien o servicio."
+                    },
+                    {
+                        q: "¿Cuál es el objetivo principal del diseño de proyectos en el ámbito empresarial?",
+                        options: [
+                            "Limitar la innovación en el desarrollo de proyectos",
+                            "Planificar y estructurar actividades para alcanzar metas específicas",
+                            "Externalizar todas las funciones de gestión de proyectos",
+                            "Reducir la inversión en recursos humanos"
+                        ],
+                        correctIndex: 1,
+                        rationale: "El diseño de proyectos es la fase arquitectónica inicial donde se define rigurosamente el alcance, los recursos, el cronograma y la viabilidad técnica para asegurar que se alcancen los objetivos trazados."
+                    },
+                    {
+                        q: "¿Qué etapas conforman el ciclo de vida de un proyecto según las metodologías de gestión?",
+                        options: [
+                            "Inicio, cierre y auditoría",
+                            "Planificación, ejecución y control",
+                            "Limitar el acceso a recursos",
+                            "Externalización de todas las etapas del proyecto"
+                        ],
+                        correctIndex: 1,
+                        rationale: "El ciclo de vida estándar involucra planificar estratégicamente qué se hará, ejecutar las tareas asignadas y monitorear (controlar) el progreso para realizar ajustes y culminar con éxito."
+                    },
+                    {
+                        q: "¿Cuál es el propósito de identificar los stakeholders de un proyecto?",
+                        options: [
+                            "Limitar la comunicación con los interesados",
+                            "Gestionar las relaciones y expectativas de las partes interesadas",
+                            "Externalizar todas las funciones de gestión de stakeholders",
+                            "Reducir la colaboración interdepartamental"
+                        ],
+                        correctIndex: 1,
+                        rationale: "Los stakeholders son todas las personas o entidades impactadas por el proyecto. Identificarlos es vital para entender sus necesidades, alinear expectativas y conseguir su apoyo durante el desarrollo."
+                    },
+                    {
+                        q: "¿Qué herramienta se utiliza para representar gráficamente las actividades de un proyecto y sus dependencias?",
+                        options: [
+                            "Diagrama de Gantt",
+                            "Limitar la planificación de actividades",
+                            "Externalizar todas las funciones de gestión de proyectos",
+                            "Reducir la comunicación interna"
+                        ],
+                        correctIndex: 0,
+                        rationale: "El Diagrama de Gantt es un cronograma visual altamente popular que muestra la duración de las tareas, en qué orden deben ejecutarse y cómo se superponen o dependen unas de otras a lo largo del tiempo."
+                    },
+                    {
+                        q: "¿Cuál es el propósito del análisis DAFO (Debilidades, Amenazas, Fortalezas y Oportunidades) en la fase de diseño de proyectos?",
+                        options: [
+                            "Limitar el análisis estratégico",
+                            "Identificar factores internos y externos que pueden influir en el proyecto",
+                            "Externalizar todas las funciones de análisis",
+                            "Reducir la documentación estratégica"
+                        ],
+                        correctIndex: 1,
+                        rationale: "Al aplicar la matriz DAFO a un proyecto, el gerente puede anticipar y mitigar los riesgos externos (Amenazas) al mismo tiempo que potencia los recursos y capacidades internas (Fortalezas)."
+                    },
+                    {
+                        q: "¿Cuál es el primer paso en el proceso de investigación de mercado?",
+                        options: [
+                            "Recopilación de datos",
+                            "Definición del problema de investigación",
+                            "Análisis de datos",
+                            "Formulación de hipótesis"
+                        ],
+                        correctIndex: 1,
+                        rationale: "Antes de encuestar o recopilar cualquier dato, es indispensable definir con precisión cuál es el problema u oportunidad comercial que se quiere investigar, para no desperdiciar recursos ni tiempo."
+                    },
+                    {
+                        q: "En el proceso de segmentación de mercado, ¿cuál es uno de los criterios demográficos comúnmente utilizados?",
+                        options: [
+                            "Estilo de vida",
+                            "Personalidad",
+                            "Nivel de ingresos",
+                            "Actitudes"
+                        ],
+                        correctIndex: 2,
+                        rationale: "La segmentación demográfica divide a la población en variables objetivas y cuantificables como edad, género, educación o nivel de ingresos. El estilo de vida o actitudes corresponden a la segmentación psicográfica."
+                    },
+                    {
+                        q: "¿Cuál es uno de los elementos del marketing mix?",
+                        options: [
+                            "Investigación de mercado",
+                            "Fuerza de ventas",
+                            "Estudio de competencia",
+                            "Análisis financiero"
+                        ],
+                        correctIndex: 1,
+                        rationale: "El marketing mix tradicional (las 4 P) incluye Producto, Precio, Plaza y Promoción. La fuerza de ventas es un componente crítico dentro de la Promoción y la Plaza, ya que empuja el producto al mercado."
+                    },
+                    {
+                        q: "¿Qué estrategia se utiliza para estimular la demanda durante la etapa de lanzamiento de un nuevo producto?",
+                        options: [
+                            "Publicidad de comparación",
+                            "Promoción de ventas",
+                            "Marketing de contenidos",
+                            "Relaciones públicas"
+                        ],
+                        correctIndex: 1,
+                        rationale: "Las promociones de ventas (como descuentos introductorios, cupones o muestras gratuitas) son incentivos tácticos a corto plazo ideales para generar prueba de producto inmediata y romper el hielo comercial."
+                    },
+                    {
+                        q: "Una empresa de alimentos desea lanzar un nuevo producto al mercado y decide realizar una investigación para entender las preferencias de los consumidores. ¿Qué técnica es más adecuada para obtener información detallada y cualitativa?",
+                        options: [
+                            "Encuestas online con preguntas cerradas",
+                            "Análisis de datos secundarios",
+                            "Grupos focales (focus groups)",
+                            "Observación pasiva en puntos de venta"
+                        ],
+                        correctIndex: 2,
+                        rationale: "Los grupos focales reúnen a un grupo pequeño de consumidores moderados por un experto, permitiendo extraer opiniones detalladas, explorar actitudes y debatir abiertamente sobre el nuevo producto."
+                    }
+                ]
+            },
+            4: {
+                title: "Módulo 4: Período 4 - Análisis y Logística",
+                questions: [
+                    {
+                        q: "¿Cuál de los siguientes es un ejemplo de norma social?",
+                        options: [
+                            "La ley de la oferta y la demanda en economía.",
+                            "El código de ética de una empresa.",
+                            "El principio de la relatividad en la física.",
+                            "La teoría de la evolución en biología."
+                        ],
+                        correctIndex: 1,
+                        rationale: "El código de ética establece pautas de comportamiento aceptables y esperadas dentro de un grupo u organización, funcionando como una norma social formalizada que regula las interacciones."
+                    },
+                    {
+                        q: "¿Cuál es un factor que puede influir en la conformidad social?",
+                        options: [
+                            "Nivel educativo.",
+                            "Altura física.",
+                            "Tipo de sangre.",
+                            "Tamaño del hogar."
+                        ],
+                        correctIndex: 0,
+                        rationale: "El nivel educativo influye en la capacidad de análisis crítico de una persona, lo que puede afectar su nivel de conformidad o independencia de pensamiento ante la presión de un grupo."
+                    },
+                    {
+                        q: "¿Cuál es un ejemplo de prejuicio?",
+                        options: [
+                            "Creer que todas las personas son iguales.",
+                            "Tener una opinión favorable sobre alguien sin conocerlo.",
+                            "Juzgar a alguien por su origen étnico.",
+                            "Aceptar a las personas por sus acciones."
+                        ],
+                        correctIndex: 2,
+                        rationale: "Un prejuicio es una actitud o creencia preconcebida, a menudo irracional o negativa, hacia un individuo basada únicamente en su pertenencia a un determinado grupo, como su origen étnico."
+                    },
+                    {
+                        q: "¿Qué tipo de liderazgo se caracteriza por fomentar la participación y la toma de decisiones conjunta?",
+                        options: [
+                            "Liderazgo autoritario.",
+                            "Liderazgo transaccional.",
+                            "Liderazgo transformacional.",
+                            "Liderazgo laissez-faire."
+                        ],
+                        correctIndex: 2,
+                        rationale: "El liderazgo transformacional se enfoca en inspirar y motivar a los seguidores, fomentando la participación activa, el empoderamiento y el compromiso del equipo en la toma de decisiones."
+                    },
+                    {
+                        q: "Una organización sin fines de lucro quiere entender por qué ha habido un aumento en la participación comunitaria. Deciden utilizar la teoría del intercambio social. ¿Cuál de los siguientes principios es fundamental en esta teoría?",
+                        options: [
+                            "Las interacciones sociales se basan en la competencia por recursos limitados",
+                            "Las personas buscan maximizar sus beneficios y minimizar sus costos en las relaciones",
+                            "Las normas culturales son la principal fuerza que guía el comportamiento social",
+                            "La desigualdad social es el principal motor de la acción colectiva"
+                        ],
+                        correctIndex: 1,
+                        rationale: "La teoría del intercambio social postula que el comportamiento social es el resultado de un proceso de evaluación en el que las personas participan si perciben que las recompensas (beneficios) superan los esfuerzos (costos)."
+                    },
+                    {
+                        q: "¿Cuál de las siguientes herramientas es más adecuada para la gestión de la calidad en procesos industriales?",
+                        options: [
+                            "Diagrama de Ishikawa",
+                            "Análisis PEST",
+                            "Análisis FODA",
+                            "Método Delphi"
+                        ],
+                        correctIndex: 0,
+                        rationale: "El Diagrama de Ishikawa (o diagrama de espina de pescado) es una herramienta visual de calidad diseñada específicamente para analizar sistemáticamente y encontrar las causas raíces de un problema en un proceso."
+                    },
+                    {
+                        q: "¿Cuál es uno de los principios fundamentales del enfoque Lean Manufacturing?",
+                        options: [
+                            "Maximizar el inventario disponible",
+                            "Minimizar el tiempo de entrega al cliente",
+                            "Aumentar la complejidad del proceso productivo",
+                            "Reducir la capacitación de los empleados"
+                        ],
+                        correctIndex: 1,
+                        rationale: "Lean Manufacturing se centra en la eliminación implacable de todo tipo de desperdicio (tareas que no agregan valor) para crear un flujo ágil que minimice el tiempo de entrega desde la orden hasta el cliente."
+                    },
+                    {
+                        q: "¿Cuál es el objetivo principal de la certificación ISO 9001?",
+                        options: [
+                            "Mejorar la seguridad laboral",
+                            "Establecer normas ambientales",
+                            "Asegurar la calidad del producto y el servicio",
+                            "Reducir los costos de producción"
+                        ],
+                        correctIndex: 2,
+                        rationale: "La norma internacional ISO 9001 establece los requisitos exactos para un Sistema de Gestión de Calidad, garantizando que la empresa cumpla consistentemente con las expectativas y requisitos reglamentarios del cliente."
+                    },
+                    {
+                        q: "¿Qué técnica se utiliza para evaluar la satisfacción del cliente de manera regular?",
+                        options: [
+                            "Análisis FODA",
+                            "Encuesta de satisfacción",
+                            "Método Delphi",
+                            "Entrevista en profundidad"
+                        ],
+                        correctIndex: 1,
+                        rationale: "Las encuestas de satisfacción son el instrumento estructurado, escalable y directo más eficaz para medir y evaluar periódicamente la percepción de los clientes sobre los productos o servicios."
+                    },
+                    {
+                        q: "Una empresa manufacturera ha decidido implementar el enfoque Six Sigma para mejorar la calidad de sus productos. ¿Qué herramienta se utiliza comúnmente en Six Sigma para identificar y eliminar defectos en un proceso?",
+                        options: [
+                            "Análisis FODA",
+                            "Diagrama de Ishikawa (o diagrama de causa y efecto)",
+                            "Matriz BCG",
+                            "Diagrama de Gantt"
+                        ],
+                        correctIndex: 1,
+                        rationale: "Dentro de la metodología Six Sigma (específicamente en la fase de Análisis del ciclo DMAIC), el Diagrama de Ishikawa es vital para desglosar todas las posibles causas que generan un defecto de calidad."
+                    },
+                    {
+                        q: "¿Cuál es una función clave de la gerencia empresarial?",
+                        options: [
+                            "Operar máquinas en la línea de producción.",
+                            "Desarrollar estrategias de crecimiento.",
+                            "Preparar informes contables diarios.",
+                            "Realizar mantenimiento de equipos."
+                        ],
+                        correctIndex: 1,
+                        rationale: "La gerencia empresarial tiene un rol directivo y de largo plazo. Su principal responsabilidad es la toma de decisiones estratégicas, como el desarrollo de planes de crecimiento, expansión y competitividad."
+                    },
+                    {
+                        q: "¿Qué indicador financiero mide la rentabilidad de una empresa en relación con su inversión total?",
+                        options: [
+                            "ROI (Return on Investment)",
+                            "EBITDA (Earnings Before Interest, Taxes, Depreciation, and Amortization)",
+                            "ROA (Return on Assets)",
+                            "ROE (Return on Equity)"
+                        ],
+                        correctIndex: 3,
+                        rationale: "El ROE (Retorno sobre el Capital) o Rentabilidad Financiera, es el ratio que mide la capacidad de la empresa para generar beneficios netos exclusivamente a partir de la inversión de sus accionistas."
+                    },
+                    {
+                        q: "¿Cuál es una función del departamento financiero en una empresa?",
+                        options: [
+                            "Desarrollar campañas de marketing.",
+                            "Producir bienes y servicios.",
+                            "Gestionar el flujo de efectivo.",
+                            "Cumplir con las regulaciones ambientales."
+                        ],
+                        correctIndex: 2,
+                        rationale: "El departamento financiero tiene la responsabilidad crítica de garantizar la liquidez operativa de la empresa mediante la administración rigurosa de los cobros, pagos y el flujo de caja diario."
+                    },
+                    {
+                        q: "¿Qué tipo de análisis evalúa la capacidad de una empresa para pagar sus deudas a corto plazo?",
+                        options: [
+                            "Análisis de liquidez.",
+                            "Análisis de rentabilidad.",
+                            "Análisis de eficiencia.",
+                            "Análisis de mercado."
+                        ],
+                        correctIndex: 0,
+                        rationale: "El análisis de liquidez (utilizando indicadores como el ratio circulante o la prueba ácida) evalúa si los activos corrientes de la empresa son suficientes para cubrir sus pasivos y obligaciones inmediatas."
+                    },
+                    {
+                        q: "¿Cuál es el objetivo del análisis DAFO (Debilidades, Amenazas, Fortalezas, Oportunidades)?",
+                        options: [
+                            "Evaluar la situación financiera de la empresa.",
+                            "Identificar áreas de crecimiento y expansión.",
+                            "Calcular la depreciación de activos fijos.",
+                            "Gestionar la producción diaria."
+                        ],
+                        correctIndex: 1,
+                        rationale: "El objetivo central del análisis DAFO es brindar un diagnóstico estratégico integral para identificar ventajas competitivas y descubrir áreas de oportunidad donde la empresa pueda crecer y expandirse."
+                    },
+                    {
+                        q: "¿Cuál es el objetivo principal del Business Intelligence (BI) en una organización?",
+                        options: [
+                            "Generar reportes financieros anuales.",
+                            "Optimizar la eficiencia operativa.",
+                            "Mejorar la infraestructura tecnológica.",
+                            "Incrementar el número de empleados."
+                        ],
+                        correctIndex: 1,
+                        rationale: "El Business Intelligence transforma datos dispersos en información procesable, lo que permite a los líderes identificar cuellos de botella, reducir desperdicios y, en definitiva, optimizar toda la eficiencia operativa."
+                    },
+                    {
+                        q: "¿Cuál es una función típica de un sistema de Business Intelligence?",
+                        options: [
+                            "Generar órdenes de compra automáticas.",
+                            "Registrar las horas de trabajo de los empleados.",
+                            "Analizar la rentabilidad de proyectos.",
+                            "Enviar correos electrónicos masivos."
+                        ],
+                        correctIndex: 2,
+                        rationale: "Un sistema de BI cruza múltiples bases de datos (costos, ingresos, tiempos) para ofrecer métricas profundas, como evaluar en tiempo real si un proyecto comercial está siendo verdaderamente rentable."
+                    },
+                    {
+                        q: "¿Qué componente del Business Intelligence se utiliza para visualizar datos de manera interactiva y comprensible?",
+                        options: [
+                            "Data warehouse.",
+                            "Dashboard.",
+                            "ERP (Enterprise Resource Planning).",
+                            "CRM (Customer Relationship Management)."
+                        ],
+                        correctIndex: 1,
+                        rationale: "Un Dashboard (o panel de control) es la interfaz gráfica y visual del sistema de BI. Agrupa gráficos e indicadores clave (KPIs) para que los gerentes puedan monitorear el negocio de un solo vistazo."
+                    },
+                    {
+                        q: "¿Cuál es uno de los beneficios de utilizar herramientas de BI en la toma de decisiones empresariales?",
+                        options: [
+                            "Aumentar la complejidad de los informes.",
+                            "Reducir la velocidad de respuesta.",
+                            "Mejorar la precisión y la confianza.",
+                            "Disminuir la colaboración entre departamentos."
+                        ],
+                        correctIndex: 2,
+                        rationale: "Al fundamentar las estrategias en datos concretos, matemáticos y actualizados (en lugar de la intuición), la gerencia reduce el riesgo y toma decisiones con una precisión y confianza mucho mayores."
+                    },
+                    {
+                        q: "Una cadena de supermercados implementa un sistema de Business Intelligence para optimizar su gestión de inventario. ¿Cuál de las siguientes métricas sería más relevante para mejorar esta eficiencia?",
+                        options: [
+                            "ROI (Return on Investment)",
+                            "Nivel de rotación de inventario (inventory turnover)",
+                            "EBITDA (Earnings Before Interest, Taxes, Depreciation, and Amortization)",
+                            "Valor presente neto (VPN)"
+                        ],
+                        correctIndex: 1,
+                        rationale: "El nivel de rotación de inventario mide cuántas veces se ha vendido y reabastecido la mercancía. En supermercados, un BI usa esta métrica para evitar tener estantes vacíos o productos caducados por sobrestock."
+                    },
+                    {
+                        q: "¿Cuál es uno de los objetivos principales de la logística empresarial?",
+                        options: [
+                            "Maximizar los costos de almacenamiento.",
+                            "Reducir la satisfacción del cliente.",
+                            "Optimizar el flujo de productos y servicios.",
+                            "Minimizar la colaboración con proveedores."
+                        ],
+                        correctIndex: 2,
+                        rationale: "La logística se encarga de planificar, implementar y controlar de forma óptima el flujo y almacenamiento de materias primas, inventarios y productos terminados desde el punto de origen hasta el punto de consumo."
+                    },
+                    {
+                        q: "¿Qué función desempeña un ERP (Enterprise Resource Planning) en la gestión logística de una empresa?",
+                        options: [
+                            "Manejar las relaciones públicas.",
+                            "Controlar el inventario de manera integrada.",
+                            "Supervisar el cumplimiento legal.",
+                            "Analizar el mercado competitivo."
+                        ],
+                        correctIndex: 1,
+                        rationale: "El ERP es un software que centraliza todos los datos de la compañía. En logística, permite sincronizar el almacén con las ventas y compras, manteniendo un control de inventario unificado y en tiempo real."
+                    },
+                    {
+                        q: "¿Qué estrategia logística se enfoca en la entrega rápida de productos a los clientes?",
+                        options: [
+                            "Logística inversa.",
+                            "Justo a tiempo (JIT).",
+                            "Cross-docking.",
+                            "Distribución exclusiva."
+                        ],
+                        correctIndex: 1,
+                        rationale: "El modelo Just In Time (JIT) busca que los materiales o productos lleguen a su destino exactamente en el momento en que se necesitan, eliminando el almacenamiento innecesario y agilizando las entregas."
+                    },
+                    {
+                        q: "¿Qué técnica se utiliza para optimizar el almacenamiento de productos en un almacén?",
+                        options: [
+                            "FIFO (First In, First Out).",
+                            "LIFO (Last In. First Out).",
+                            "FIFO (First In, Last Out).",
+                            "LIFO (Last In, Last Out)."
+                        ],
+                        correctIndex: 0,
+                        rationale: "El método FIFO (lo primero en entrar es lo primero en salir) es vital en la gestión de almacenes para asegurar la rotación constante de mercancías y evitar que los productos más antiguos se deterioren o caduquen."
+                    },
+                    {
+                        q: "Una empresa de e-commerce experimenta retrasos en entregas. Utilizando herramientas de logística, descubren que la mayoría de los retrasos ocurren en el centro de distribución. ¿Qué acción mejoraría la puntualidad?",
+                        options: [
+                            "Contratar más conductores de entrega.",
+                            "Optimizar los procesos del centro de distribución.",
+                            "Aumentar el inventario de productos en el centro de distribución.",
+                            "Reducir la cantidad de pedidos aceptados diariamente."
+                        ],
+                        correctIndex: 1,
+                        rationale: "Si el cuello de botella (la raíz del problema) se ha localizado en el centro de distribución, la acción correctiva debe ser optimizar sus flujos internos (preparación, empaque, picking) para liberar el despacho de los productos."
+                    }
+                ]
+            }
+        };
+
+        // --- ESTADO DE LA APP ---
+        let currentModuleId = 1;
+        let currentPart = 1;
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let userAnswers = [];
+        let currentMistakes = [];
+        let globalQuestionOffset = 0;
+
+        const letters = ['A.', 'B.', 'C.', 'D.'];
+
+        const viewModules = document.getElementById('view-modules');
+        const viewSubmodules = document.getElementById('view-submodules');
+        const viewQuiz = document.getElementById('view-quiz');
+        const viewResults = document.getElementById('view-results');
+        const viewHistory = document.getElementById('view-history');
+
+        // --- NAVEGACIÓN ---
+        function goHome() {
+            viewQuiz.classList.add('hidden');
+            viewResults.classList.add('hidden');
+            viewHistory.classList.add('hidden');
+            viewSubmodules.classList.add('hidden');
+            viewModules.classList.remove('hidden');
+        }
+
+        function goBackToSubmodules() {
+            viewQuiz.classList.add('hidden');
+            viewResults.classList.add('hidden');
+            viewSubmodules.classList.remove('hidden');
+        }
+
+        function showParts(moduleId) {
+            currentModuleId = moduleId;
+            const totalQs = quizData[moduleId].questions.length;
+
+            if (totalQs === 0) {
+                alert("Primero debes pegar el código con las preguntas de este módulo.");
+                return;
+            }
+
+            viewModules.classList.add('hidden');
+            viewResults.classList.add('hidden');
+            viewHistory.classList.add('hidden');
+            viewSubmodules.classList.remove('hidden');
+
+            document.getElementById('submodules-title').innerText = quizData[moduleId].title;
+
+            const mid = Math.ceil(totalQs / 2);
+
+            document.getElementById('submodules-grid').innerHTML = `
+                <button class="module-btn" onclick="startModule(${moduleId}, 1, ${mid})">
+                    <h3>Parte 1</h3>
+                    <p>Preguntas 1 a ${mid}</p>
+                </button>
+                <button class="module-btn" onclick="startModule(${moduleId}, 2, ${mid})">
+                    <h3>Parte 2</h3>
+                    <p>Preguntas ${mid + 1} a ${totalQs}</p>
+                </button>
+            `;
+        }
+
+        // --- LÓGICA DEL QUIZ ---
+        function startModule(moduleId, part, mid) {
+            currentModuleId = moduleId;
+            currentPart = part;
+            const allQs = quizData[moduleId].questions;
+
+            if (part === 1) {
+                currentQuestions = allQs.slice(0, mid);
+                globalQuestionOffset = 0;
+            } else {
+                currentQuestions = allQs.slice(mid);
+                globalQuestionOffset = mid;
+            }
+
+            currentIndex = 0;
+            userAnswers = new Array(currentQuestions.length).fill(null);
+            currentMistakes = [];
+
+            document.getElementById('module-title-display').innerText = `${quizData[moduleId].title} (Parte ${part})`;
+            viewSubmodules.classList.add('hidden');
+            viewQuiz.classList.remove('hidden');
+
+            renderQuestion();
+        }
+
+        function renderProgressBar() {
+            const bar = document.getElementById('progress-bar');
+            bar.innerHTML = '';
+            for (let i = 0; i < currentQuestions.length; i++) {
+                const seg = document.createElement('div');
+                seg.className = 'segment';
+                if (i <= currentIndex) seg.classList.add('active');
+                bar.appendChild(seg);
+            }
+            document.getElementById('progress-text').innerText = `${currentIndex + 1}/${currentQuestions.length}`;
+        }
+
+        function renderQuestion() {
+            renderProgressBar();
+            const q = currentQuestions[currentIndex];
+
+            document.getElementById('q-number').innerText = `${globalQuestionOffset + currentIndex + 1}.`;
+            document.getElementById('q-text').innerText = q.q;
+
+            document.getElementById('btn-prev').disabled = (currentIndex === 0);
+            document.getElementById('btn-next').style.display = 'none';
+            document.getElementById('rationale-container').style.display = 'none';
+
+            const optsContainer = document.getElementById('options-container');
+            optsContainer.innerHTML = '';
+            const answeredIndex = userAnswers[currentIndex];
+
+            q.options.forEach((optText, i) => {
+                const optDiv = document.createElement('div');
+                optDiv.className = 'option';
+                optDiv.innerHTML = `<div class="option-letter">${letters[i]}</div><div class="option-text">${optText}</div>`;
+
+                if (answeredIndex === null) {
+                    optDiv.onclick = () => handleSelection(i, optDiv);
+                } else {
+                    optDiv.classList.add('disabled');
+                    if (i === q.correctIndex) optDiv.classList.add('correct-answer');
+                    else if (i === answeredIndex) optDiv.classList.add('wrong-answer');
+                }
+                optsContainer.appendChild(optDiv);
+            });
+
+            if (answeredIndex !== null) showRationale(q);
+        }
+
+        function handleSelection(selectedIndex, clickedDiv) {
+            const q = currentQuestions[currentIndex];
+            userAnswers[currentIndex] = selectedIndex;
+
+            const allOptions = document.querySelectorAll('.option');
+            allOptions.forEach(opt => { opt.classList.add('disabled'); opt.onclick = null; });
+
+            if (selectedIndex === q.correctIndex) {
+                clickedDiv.classList.add('correct-answer');
+            } else {
+                clickedDiv.classList.add('wrong-answer');
+                allOptions[q.correctIndex].classList.add('correct-answer');
+
+                currentMistakes.push({
+                    pregunta: `${globalQuestionOffset + currentIndex + 1}. ${q.q}`,
+                    tuRespuesta: q.options[selectedIndex],
+                    correcta: q.options[q.correctIndex]
+                });
+            }
+            showRationale(q);
+        }
+
+        function showRationale(q) {
+            document.getElementById('rationale-text').innerText = q.rationale;
+            document.getElementById('rationale-container').style.display = 'block';
+            const btnNext = document.getElementById('btn-next');
+            btnNext.innerText = (currentIndex === currentQuestions.length - 1) ? "Finalizar" : "Siguiente";
+            btnNext.style.display = 'block';
+        }
+
+        function prevQuestion() { if (currentIndex > 0) { currentIndex--; renderQuestion(); } }
+        function nextQuestion() { if (currentIndex < currentQuestions.length - 1) { currentIndex++; renderQuestion(); } else { finishQuiz(); } }
+
+        // --- RESULTADOS E HISTORIAL ---
+        function finishQuiz() {
+            viewQuiz.classList.add('hidden');
+            viewResults.classList.remove('hidden');
+
+            let correctCount = userAnswers.filter((ans, i) => ans === currentQuestions[i].correctIndex).length;
+            let total = currentQuestions.length;
+            let percentage = (correctCount / total) * 100;
+
+            document.getElementById('final-correct').innerText = correctCount;
+            document.getElementById('final-total').innerText = total;
+
+            const emojiEl = document.getElementById('result-emoji');
+            const msgEl = document.getElementById('result-message');
+            const scoreText = document.getElementById('result-score-text');
+            emojiEl.className = 'results-emoji';
+
+            if (percentage >= 70) {
+                emojiEl.innerText = '🥳'; emojiEl.classList.add('anim-happy');
+                msgEl.innerText = '¡Excelente trabajo!'; scoreText.style.color = 'var(--color-correct)';
+            } else {
+                emojiEl.innerText = '😢'; emojiEl.classList.add('anim-sad');
+                msgEl.innerText = 'Necesitas repasar más'; scoreText.style.color = 'var(--color-incorrect)';
+            }
+            saveHistory(`${quizData[currentModuleId].title} (Parte ${currentPart})`, correctCount, total, currentMistakes);
+        }
+
+        function saveHistory(moduleName, score, total, mistakes) {
+            let history = JSON.parse(localStorage.getItem('umaAdminHistory')) || [];
+            let date = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+            history.unshift({ moduleName, score, total, date, mistakes });
+            localStorage.setItem('umaAdminHistory', JSON.stringify(history));
+        }
+
+        function showHistory() {
+            viewModules.classList.add('hidden'); viewResults.classList.add('hidden'); viewSubmodules.classList.add('hidden');
+            viewHistory.classList.remove('hidden');
+
+            const container = document.getElementById('history-container');
+            let history = JSON.parse(localStorage.getItem('umaAdminHistory')) || [];
+
+            if (history.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:gray;">Aún no hay intentos registrados.</p>';
+                return;
+            }
+            container.innerHTML = history.map(h => `
+                <div class="history-item">
+                    <div class="history-header"><span>${h.moduleName}</span><span>Nota: ${h.score}/${h.total}</span></div>
+                    <div style="font-size:0.8rem; color:gray; margin-bottom:10px;">Fecha: ${h.date}</div>
+                    ${h.mistakes.length === 0 ? '<div style="color:green; font-weight:bold;">¡Perfecto! Sin errores.</div>' :
+                    `<strong>Errores a repasar (${h.mistakes.length}):</strong>` +
+                    h.mistakes.map(m => `<div class="mistake-log"><div><strong>${m.pregunta}</strong></div><div><span>❌ Marcaste:</span> ${m.tuRespuesta}</div><div><span class="corr">✅ Correcta:</span> ${m.correcta}</div></div>`).join('')
+                }
+                </div>
+            `).join('');
+        }
+
+        function clearHistory() {
+            if (confirm("¿Seguro que quieres borrar todo el historial?")) {
+                localStorage.removeItem('umaAdminHistory');
+                showHistory();
+            }
+        }
+    </script>
+</body>
+
+</html>
